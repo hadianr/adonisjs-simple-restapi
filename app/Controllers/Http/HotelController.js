@@ -102,7 +102,7 @@ class HotelController {
     if (validation.fails()) return response.status(400).json({message: validation.messages()[0].message})
     
     // Check if hotel with params.id not found
-    if(!hotel) return response.status(404).json({message: `Hotel with id ${params.id} is not found or has not been created`, data: {}})
+    if(!hotel) return response.status(200).json({message: `Hotel with id ${params.id} is not found or has not been created`, data: {}})
 
     hotel.name = req.name
     hotel.address = req.address
@@ -125,7 +125,7 @@ class HotelController {
    */
   async destroy ({ params, request, response }) {
     const hotel = await Hotel.find(params.id)
-    if(!hotel) return response.status(404).json({message: `Hotel with id ${params.id} is not found or has not been created`, data: {}})
+    if(!hotel) return response.status(200).json({message: `Hotel with id ${params.id} is not found or has not been created`, data: {}})
     await hotel.delete()
 
     const resData = {
