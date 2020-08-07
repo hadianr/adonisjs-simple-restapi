@@ -4,6 +4,8 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
+const Hotel = use('App/Models/Hotel')
+
 /**
  * Resourceful controller for interacting with hotels
  */
@@ -15,21 +17,14 @@ class HotelController {
    * @param {object} ctx
    * @param {Request} ctx.request
    * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
-  async index ({ request, response, view }) {
-  }
-
-  /**
-   * Render a form to be used for creating a new hotel.
-   * GET hotels/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async create ({ request, response, view }) {
+  async index ({ request, response }) {
+    const result = await Hotel.all()
+    const resData = {
+      messages: 'Hotel has been listed successfully.',
+      data: result
+    }
+    return response.status(200).json(resData)
   }
 
   /**
@@ -41,6 +36,17 @@ class HotelController {
    * @param {Response} ctx.response
    */
   async store ({ request, response }) {
+    const req = request.all()
+    const hotel = new Hotel()
+    hotel.name = req.name
+    hotel.address = req.address
+    await hotel.save()
+    const resData = {
+      messages: 'Hotel has been created successfully.',
+      data: hotel
+    }
+
+    return response.status(201).json(resData)
   }
 
   /**
@@ -50,21 +56,15 @@ class HotelController {
    * @param {object} ctx
    * @param {Request} ctx.request
    * @param {Response} ctx.response
-   * @param {View} ctx.view
    */
-  async show ({ params, request, response, view }) {
-  }
+  async show ({ params, request, response }) {
+    const hotel = await Hotel.find(params.id)
+    const resData = {
+      messages: 'Hotel been fetched successfully.',
+      data: hotel
+    }
 
-  /**
-   * Render a form to update an existing hotel.
-   * GET hotels/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async edit ({ params, request, response, view }) {
+    return response.status(200).json(resData)
   }
 
   /**
@@ -76,6 +76,21 @@ class HotelController {
    * @param {Response} ctx.response
    */
   async update ({ params, request, response }) {
+    const req = request.all()
+    const hotel = await Hotel.find(params.id)
+    
+    // Check if hotel with params.id not found
+    if(!hotel) return response.status(404).json({messages: `Hotel with id ${params.id} is not found or has not been created`, data: {}})
+
+    hotel.name = req.name
+    hotel.address = req.address
+    await hotel.save()
+
+    const resData = {
+      messages: 'Hotel has been fetched successfully.',
+      data: hotel
+    }
+    return response.status(200).json(resData)
   }
 
   /**
@@ -87,6 +102,15 @@ class HotelController {
    * @param {Response} ctx.response
    */
   async destroy ({ params, request, response }) {
+    const hotel = await Hotel.find(params.id)
+    if(!hotel) return response.status(404).json({messages: `Hotel with id ${params.id} is not found or has not been created`, data: {}})
+    await hotel.delete()
+
+    const resData = {
+      messages: `Hotel with id ${params.id} has been deleted successfully.`,
+      data: hotel
+    }
+    return response.status(200).json(resData)
   }
 }
 

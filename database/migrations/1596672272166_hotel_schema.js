@@ -7,6 +7,8 @@ class HotelSchema extends Schema {
   up () {
     this.create('hotels', (table) => {
       table.increments()
+      table.string('name')
+      table.text('address')
       table.timestamps()
     })
   }
