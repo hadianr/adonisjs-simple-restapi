@@ -39,6 +39,7 @@ class HotelController {
   async store ({ request, response }) {
     const req = request.all()
 
+    // tambah comment
     // rules validator
     const rules = {
       name: 'required',
